@@ -1,3 +1,6 @@
+const MEMOWIDTH = 190;
+const MEMOHEIGHT = 150;
+
 export default class Memo {
   constructor() {
     const $element = document.createElement("textarea");
@@ -10,32 +13,27 @@ export default class Memo {
 
     $element.focus();
 
-    console.log(this);
-
     window.addEventListener("mousemove", this.trackingMouse);
     $element.addEventListener("click", () => {
-      console.log("click");
+      this.$element = $element;
       window.removeEventListener("mousemove", this.trackingMouse);
+      console.log("new Memo generated");
     });
 
-    this.$element = $element;
+    document.body.appendChild($element);
 
-    document.body.appendChild(this.$element);
-
-    console.log("new Memo generated", this);
+    console.log("creating new Memo");
   }
 
   trackingMouse(e) {
-    console.log(this);
-
     let posX = e.pageX - 10;
     let posY = e.pageY - 10;
     if (posX < 0) posX = 0;
-    else if (posX + this.noteWidth > document.body.offsetWidth)
-      posX = document.body.offsetWidth - this.noteWidth;
+    else if (posX + MEMOWIDTH > document.body.offsetWidth)
+      posX = document.body.offsetWidth - MEMOWIDTH;
     if (posY < 0) posY = 0;
-    else if (posY + this.noteHeight > document.body.scrollHeight)
-      posY = document.body.scrollHeight - this.noteHeight;
+    else if (posY + MEMOHEIGHT > document.body.scrollHeight)
+      posY = document.body.scrollHeight - MEMOHEIGHT;
 
     this.$element.style.left = `${posX}px`;
     this.$element.style.top = `${posY}px`;

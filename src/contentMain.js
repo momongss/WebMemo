@@ -2,18 +2,26 @@
 
 import Memo from "./components/Memo.js";
 
-const MEMOWIDTH = 190;
-const MEMOHEIGHT = 150;
-
-const $memoList = [];
+let isAltPressed = false;
 
 export function main() {
   console.log("app running");
-  window.addEventListener("keyup", (e) => {
+  addListener();
+}
+
+function addListener() {
+  window.addEventListener("keydown", (e) => {
     if (e.key === "Alt") {
+      isAltPressed = true;
+    }
+    if (isAltPressed && (e.key === "q" || e.key === "Q")) {
       const memo = new Memo();
-      $memoList.push(memo);
     }
   });
-  console.log("new Memo generated");
+
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Alt") {
+      isAltPressed = false;
+    }
+  });
 }

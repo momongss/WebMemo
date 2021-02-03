@@ -1,6 +1,6 @@
 "use strict";
 
-import Memo from "./components/Memo.js";
+import createNewMemo from "./components/Memo.js";
 
 import { getMousePos } from "./utils/eventHandler.js";
 
@@ -10,9 +10,40 @@ let mousePos = {
   y: 0,
 };
 
+const IdSet = new Set();
+const MemoList = [];
+
 export function main() {
   console.log("app running");
   addListener();
+}
+
+function createNewId() {
+  let id = 0;
+  while (IdSet.has(id)) id++;
+  IdSet.add(id);
+  return id;
+}
+
+function printMemoList() {
+  for (const memo of MemoList) {
+    console.log(memo);
+  }
+}
+
+function deleteMemoById(id) {
+  for (const i = 0; i < MemoList.length; i++) {
+    if (MemoList[i].id === id) {
+      MemoList.splice(i, 1);
+      deleteId(id);
+      return true;
+    }
+  }
+  throw `attempt to del nonexistent id : ${id}`;
+}
+
+function deleteId(id) {
+  IdSet.delete(id);
 }
 
 function addListener() {
@@ -21,7 +52,20 @@ function addListener() {
       isAltPressed = true;
     }
     if (isAltPressed && (e.key === "q" || e.key === "Q")) {
-      const memo = new Memo(mousePos);
+      const initData = {
+        pos: mousePos,
+        createTime: null,
+        modifyTime: null,
+        text: null,
+      };
+      const id = createNewId();
+      const memo = createNewMemo(id, initData, deleteMemoById);
+      MemoList.push(memo);
+    }
+
+    // debug
+    if (e.key === "Shift") {
+      printMemoList();
     }
   });
 

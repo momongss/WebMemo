@@ -6,11 +6,11 @@ import { getMousePos } from "../utils/eventHandler.js";
 import { MEMOWIDTH, MEMOHEIGHT } from "../const/memoSize.js";
 
 export default class Memo {
-  pos = null;
-  createTime = null;
-  modifyTime = null;
-
   constructor(initPos) {
+    let memoPos = null;
+    let createTime = null;
+    let modifyTime = null;
+
     const $element = document.createElement("textarea");
     $element.className = "new-note-content";
     $element.style.position = "absolute";
@@ -24,9 +24,20 @@ export default class Memo {
     $element.focus();
 
     window.addEventListener("mousemove", trackingMouse);
+    window.addEventListener("keyup", () => {});
     window.addEventListener("keyup", removeElement);
     $element.addEventListener("click", stopTracking);
     $element.addEventListener("keyup", removeElement);
+
+    let timeout = null;
+    $element.addEventListener("keyup", function storeMemo(e) {
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        modifyTime = getformattedTime();
+        console.log("생성시간:", modifyTime);
+      }, 1000);
+    });
 
     document.body.appendChild($element);
 
@@ -36,9 +47,8 @@ export default class Memo {
       window.removeEventListener("keyup", removeElement);
       $element.removeEventListener("click", stopTracking);
 
-      this.pos = { x: $element.style.left, y: $element.style.top };
-      this.createTime = getformattedTime();
-      this.modifyTime = this.createTime;
+      createTime = getformattedTime();
+      modifyTime = createTime;
 
       console.log("new Memo created");
     }
@@ -50,9 +60,9 @@ export default class Memo {
     }
 
     function trackingMouse(e) {
-      const pos = getMousePos(e);
-      $element.style.left = `${pos.x}px`;
-      $element.style.top = `${pos.y}px`;
+      memoPos = getMousePos(e);
+      $element.style.left = `${memoPos.x}px`;
+      $element.style.top = `${memoPos.y}px`;
     }
   }
 }

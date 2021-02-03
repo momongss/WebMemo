@@ -72,15 +72,15 @@ function addListener() {
     }
   });
 
-  window.addEventListener("keyup", (e) => {
+  mainContainer.addEventListener("keyup", (e) => {
     if (e.key === "Alt") {
       isAltPressed = false;
     }
   });
 
   // 메모가 생성됬을 때 제자리에 가게하기 위한 처리.
-  window.addEventListener("mousemove", (e) => {
-    const pos = getMousePos(e);
+  mainContainer.addEventListener("mousemove", (e) => {
+    const pos = getMousePos(e, mainContainer);
     mousePos.x = pos.x;
     mousePos.y = pos.y;
   });

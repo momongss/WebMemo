@@ -11,6 +11,8 @@ export default function createNewMemo(
   mainContainer,
   deleteMemoById
 ) {
+  console.log(mainContainer);
+
   const Memo = {
     id: id,
     pos: initData.pos,
@@ -31,8 +33,8 @@ export default function createNewMemo(
 
   $element.focus();
 
-  window.addEventListener("mousemove", trackingMouse);
-  window.addEventListener("keyup", removeElement);
+  mainContainer.addEventListener("mousemove", trackingMouse);
+  mainContainer.addEventListener("keyup", removeElement);
   $element.addEventListener("click", stopTracking);
   $element.addEventListener("keyup", removeElement);
 
@@ -51,12 +53,12 @@ export default function createNewMemo(
     }, 1000);
   });
 
-  document.body.appendChild($element);
+  mainContainer.appendChild($element);
 
   function stopTracking() {
     // 메모가 고정되면, 필요없는 이벤트 리스너들을 삭제
-    window.removeEventListener("mousemove", trackingMouse);
-    window.removeEventListener("keyup", removeElement);
+    mainContainer.removeEventListener("mousemove", trackingMouse);
+    mainContainer.removeEventListener("keyup", removeElement);
     $element.removeEventListener("click", stopTracking);
 
     Memo.createTime = getformattedTime();
@@ -73,7 +75,7 @@ export default function createNewMemo(
   }
 
   function trackingMouse(e) {
-    Memo.pos = getMousePos(e);
+    Memo.pos = getMousePos(e, mainContainer);
 
     $element.style.left = `${Memo.pos.x}px`;
     $element.style.top = `${Memo.pos.y}px`;

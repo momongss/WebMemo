@@ -5,7 +5,12 @@ import { getMousePos } from "../utils/eventHandler.js";
 
 import { MEMOWIDTH, MEMOHEIGHT } from "../const/memoSize.js";
 
-export default function createNewMemo(id, initData, deleteMemoById) {
+export default function createNewMemo(
+  id,
+  initData,
+  mainContainer,
+  deleteMemoById
+) {
   const Memo = {
     id: id,
     pos: initData.pos,
@@ -32,9 +37,13 @@ export default function createNewMemo(id, initData, deleteMemoById) {
   $element.addEventListener("keyup", removeElement);
 
   let timeout = null;
+  $element.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+  });
   $element.addEventListener("keyup", function storeMemo(e) {
-    clearTimeout(timeout);
+    e.stopPropagation();
 
+    clearTimeout(timeout);
     timeout = setTimeout(() => {
       Memo.modifyTime = getformattedTime();
       Memo.text = $element.value;
@@ -65,6 +74,7 @@ export default function createNewMemo(id, initData, deleteMemoById) {
 
   function trackingMouse(e) {
     Memo.pos = getMousePos(e);
+
     $element.style.left = `${Memo.pos.x}px`;
     $element.style.top = `${Memo.pos.y}px`;
   }

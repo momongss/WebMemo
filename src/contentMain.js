@@ -3,6 +3,7 @@
 import createNewMemo from "./components/Memo.js";
 
 import { getMousePos } from "./utils/eventHandler.js";
+import { findMainContainer } from "./utils/findMainContainer.js";
 
 let isAltPressed = false;
 let mousePos = {
@@ -32,7 +33,7 @@ function printMemoList() {
 }
 
 function deleteMemoById(id) {
-  for (const i = 0; i < MemoList.length; i++) {
+  for (let i = 0; i < MemoList.length; i++) {
     if (MemoList[i].id === id) {
       MemoList.splice(i, 1);
       deleteId(id);
@@ -47,6 +48,8 @@ function deleteId(id) {
 }
 
 function addListener() {
+  const mainContainer = findMainContainer();
+
   window.addEventListener("keydown", (e) => {
     if (e.key === "Alt") {
       isAltPressed = true;
@@ -59,7 +62,7 @@ function addListener() {
         text: null,
       };
       const id = createNewId();
-      const memo = createNewMemo(id, initData, deleteMemoById);
+      const memo = createNewMemo(id, initData, mainContainer, deleteMemoById);
       MemoList.push(memo);
     }
 

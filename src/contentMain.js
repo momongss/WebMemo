@@ -1,6 +1,7 @@
 "use strict";
 
-import createNewMemo from "./components/Memo.js";
+import createMemo from "./components/Memo.js";
+import Storage from "./utils/Storage.js";
 
 import { getMousePos } from "./utils/eventHandler.js";
 import { findMainContainer } from "./utils/findMainContainer.js";
@@ -10,16 +11,69 @@ let mousePos = {
   x: 0,
   y: 0,
 };
+let MemoList = [];
 
 const IdSet = new Set();
-const MemoList = [];
 
-export function main() {
+export async function main() {
   console.log("app running");
-  addListener();
+  let preMemoList = await Storage.getItem();
+  MemoList = preMemoList == null ? [] : preMemoList;
+  console.log(MemoList);
+  const mainContainer = findMainContainer();
+
+  // 메모가 생성된 시점에 마우스 포인터 위치에 생성하기 위한 처리
+  mainContainer.addEventListener("mousemove", trackingMouse);
+  function trackingMouse(e) {
+    const pos = getMousePos(e, mainContainer);
+    mousePos.x = pos.x;
+    mousePos.y = pos.y;
+  }
+
+  // Alt + q
+  mainContainer.addEventListener("keydown", createMemoHandler);
+  mainContainer.addEventListener("keyup", (e) => {
+    if (e.key === "Alt") {
+      isAltPressed = false;
+    }
+  });
+
+  function createMemoHandler(e) {
+    // for debugging
+    if (e.key === "Shift") {
+      printMemoList();
+    }
+
+    if (e.key === "Alt") {
+      isAltPressed = true;
+    }
+    if (isAltPressed && (e.key === "q" || e.key === "Q")) {
+      const initData = {
+        pos: mousePos,
+        createTime: null,
+        modifyTime: null,
+        text: null,
+      };
+      const id = createMemoId();
+      const memo = createMemo(
+        id,
+        initData,
+        mainContainer,
+        deleteMemoById,
+        () => {
+          storeMemoList();
+        }
+      );
+      MemoList.push(memo);
+    }
+  }
 }
 
-function createNewId() {
+function storeMemoList() {
+  Storage.setItem(JSON.stringify(MemoList));
+}
+
+function createMemoId() {
   let id = 0;
   while (IdSet.has(id)) id++;
   IdSet.add(id);
@@ -45,43 +99,4 @@ function deleteMemoById(id) {
 
 function deleteId(id) {
   IdSet.delete(id);
-}
-
-function addListener() {
-  const mainContainer = findMainContainer();
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Alt") {
-      isAltPressed = true;
-    }
-    if (isAltPressed && (e.key === "q" || e.key === "Q")) {
-      const initData = {
-        pos: mousePos,
-        createTime: null,
-        modifyTime: null,
-        text: null,
-      };
-      const id = createNewId();
-      const memo = createNewMemo(id, initData, mainContainer, deleteMemoById);
-      MemoList.push(memo);
-    }
-
-    // debug
-    if (e.key === "Shift") {
-      printMemoList();
-    }
-  });
-
-  mainContainer.addEventListener("keyup", (e) => {
-    if (e.key === "Alt") {
-      isAltPressed = false;
-    }
-  });
-
-  // 메모가 생성됬을 때 제자리에 가게하기 위한 처리.
-  mainContainer.addEventListener("mousemove", (e) => {
-    const pos = getMousePos(e, mainContainer);
-    mousePos.x = pos.x;
-    mousePos.y = pos.y;
-  });
 }

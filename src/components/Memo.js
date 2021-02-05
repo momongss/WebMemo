@@ -9,7 +9,8 @@ export default function createNewMemo(
   id,
   initData,
   mainContainer,
-  deleteMemoById
+  deleteMemoById,
+  storeMemoLists
 ) {
   console.log(mainContainer);
 
@@ -49,7 +50,8 @@ export default function createNewMemo(
     timeout = setTimeout(() => {
       Memo.modifyTime = getformattedTime();
       Memo.text = $element.value;
-      console.log("생성시간:", Memo.modifyTime);
+      console.log("메모 저장됨 (시간):", Memo.modifyTime);
+      storeMemoLists();
     }, 1000);
   });
 

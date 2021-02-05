@@ -1,20 +1,16 @@
-class Storage {
-  static setItem() {
-    chrome.storage.local.set({ WebMemoLists: "value" }, function () {
-      console.log("Value is set to " + value);
+export default class Storage {
+  static setItem(memoLists) {
+    chrome.storage.local.set({ WebMemoLists: memoLists }, function () {
+      console.log("Value is set to " + JSON.stringify(memoLists));
     });
   }
 
-  set() {
-    const value = "aaaaa";
-    chrome.storage.local.set({ key: "value" }, function () {
-      console.log("Value is set to " + value);
-    });
-  }
-
-  get() {
-    chrome.storage.local.get(["key"], function (result) {
-      console.log("Value currently is " + result.key);
+  static getItem() {
+    let gettingItem = new Promise((resolve) =>
+      chrome.storage.local.get("WebMemoLists", resolve)
+    );
+    return gettingItem.then((re) => {
+      return JSON.parse(re.WebMemoLists);
     });
   }
 }
